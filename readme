@@ -1,0 +1,69 @@
+# Jacoco Cases
+
+> everything in [JacocoDoc](https://www.jacoco.org/jacoco/trunk/doc/)
+
+## About Jacoco
+
+Jacoco 有两种玩法：offline 和 on-the-fly
+
+## Play With Scripts
+
+查看 Java 字节码的指令
+
+```shell
+javap -verbose {{TargetClassFile}}
+```
+
+使用 offline 模式指定 class 文件模拟插桩结果
+
+```shell
+java -jar jacoco-0.8.8/lib/jacococli.jar instrument {{TargetClassFile}} --dest out
+```
+
+javaagent 模式启动项目 Jar 包
+
+```
+java -jar -javaagent:jacoco-0.8.8/lib/jacocoant.jar=destfile=result.exec {{ProjectJar}}
+```
+
+使用 jacococli 解析执行结果
+
+```
+java -jar jacoco-0.8.8/lib/jacococli.jar report result.exec --classfiles {{PathToPrjectTargetClass}} --sourcefiles {{PathToProjectSource}} --html html
+```
+
+## A Tour of Jacoco
+
+使用: JacocoPets
+
+### 普通情况下的应用发布
+
+1. 打包 `cd JacocoPets;mvn package;cd ..`
+2. 启动 `java -jar JacocoPets/target/JacocoPets-0.0.1-SNAPSHOT.jar`
+3. 对外提供 web 服务
+
+```
+curl --location --request GET 'localhost:8080/pet/search/TryBySound?sound=miao';
+curl --location --request GET 'localhost:8080/pet/search/TryBySound?sound=wang';
+```
+
+### With Jacoco on-the-fly
+
+1. 打包 `cd JacocoPets;mvn package;cd ..`
+2. 带 agent 参数启动 `java -jar -javaagent:jacoco-0.8.8/lib/jacocoagent.jar=destfile=result.exec JacocoPets/target/JacocoPets-0.0.1-SNAPSHOT.jar`
+3. 两个测试用例
+
+```
+curl --location --request GET 'localhost:8080/pet/search/TryBySound?sound=miao';
+curl --location --request GET 'localhost:8080/pet/search/TryBySound?sound=wang';
+```
+
+4. 停止应用 `ctrl + c`, 覆盖率执行结果 `result.exec`
+5. 直接使用 jacococli 解析覆盖率结果:
+   - classfiles 指定 class 文件
+   - sourcefiles 指定源码文件
+   - html 以网页的形式导出结果
+
+```shell
+java -jar jacoco-0.8.8/lib/jacococli.jar report jacoco.exec --classfiles JacocoPets/target/classes --sourcefiles JacocoPets/src/main/java --html html
+```

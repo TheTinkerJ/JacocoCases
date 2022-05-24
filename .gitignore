@@ -1,0 +1,5 @@
+# remove all class
+**.*class
+/result/
+/html/
+
