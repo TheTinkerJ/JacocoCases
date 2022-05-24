@@ -2,4 +2,6 @@
 **.*class
 /result/
 /html/
+/out/
 
+.vscode/settings.json
